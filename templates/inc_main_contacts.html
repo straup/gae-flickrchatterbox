@@ -1,0 +1,75 @@
+<div style="margin-left:10%;">
+  {% for c in comments %}
+
+  <div id="user_{{ c.nsid_hex|escape }}" class="photos_hex_">
+
+    <div style="float:left;margin-right:40px;margin-bottom:10px;">
+      <a href="#" onclick="window.chatterbox.show_photos('{{ c.nsid_hex|escape }}');return false;">
+        <img id="buddy_{{ c.nsid_hex}}" src="{{ c.buddyicon }}" height="48" width="48" class="buddy_hex" style="border:3px solid #{{ c.nsid_short_hex}};" />
+      </a>
+    </div>
+
+    <div id="desc_{{ c.nsid_hex|escape }}" style="float:left;font-size:1.15em;margin-top:15px;">
+      <span style="border-bottom:none;font-weight:700;">{{ c.username|escape }}</span> has <span class="0" id="comments_count_{{ c.nsid_hex|escape }}">comments on</span> <span style="font-weight:700;">{{ c.count }}</span> photo{% ifequal c.count 1 %}{% else %}s{% endifequal %}
+    </div>
+
+    <div id="photos_{{ c.nsid_hex|escape}}" style="display:none;">
+
+      {% ifnotequal c.count 1 %}
+
+      <div style="float:left;margin-right:10px;margin-bottom:10px;">
+      {% for p in c.photos %}
+
+      <div style="float:left;margin-right:10px;margin-bottom:10px;">
+        <a href="#thumb_{{ p.id|escape }}">
+          <img id="photo_{{ p.id|escape }}" src="http://farm{{ p.farm|escape }}.static.flickr.com/{{ p.server|escape }}/{{ p.id|escape }}_{{ p.secret|escape }}_s.jpg" height="48" width="48"  style="border:3px solid #{{ c.nsid_short_hex}};" /></a>
+      </div>
+
+      {% endfor %}
+
+      </div>
+      <br clear="all" />
+
+      {% endifnotequal %}
+
+      {% for p in c.photos %}
+
+      <a name="thumb_{{ p.id|escape }}"></a>
+
+      <div style="margin-left:95px;">
+        <div style="float:left;margin-right:10px;margin-bottom:10px;">
+
+          <a href="http://www.flickr.com/photo.gne?id={{ p.id|escape }}" target="_flickr">
+            <img id="photo_{{ p.id|escape }}" src="http://farm{{ p.farm|escape }}.static.flickr.com/{{ p.server|escape }}/{{ p.id|escape }}_{{ p.secret|escape }}_m.jpg" style="border:3px solid #{{ c.nsid_short_hex}};" /></a>
+        </div>
+
+        <div id="comments_{{ p.id|escape}}" style="margin-left:275px;">loading...</div>
+      </div>
+
+      <br clear="all" /><br />
+      
+      {% endfor %}
+
+    </div>
+
+  </div>
+
+  <br clear="all" />
+
+{% endfor %}
+
+</div>
+
+<script type="text/javascript">
+{% for c in comments %}
+{% for p in c.photos %}
+
+var delay = Math.floor(Math.random() * 1000);
+
+setTimeout(function(){
+	window.chatterbox.get_comments('{{ p.id|escape }}', '{{ c.nsid_hex|escape }}');
+}, delay);
+
+{% endfor %}
+{% endfor %}
+</script>

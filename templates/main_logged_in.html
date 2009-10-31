@@ -1,0 +1,28 @@
+{% include "inc_head.html" %}
+
+<script type="text/javascript" src="/javascript/flickr-api.js"></script>
+<script type="text/javascript" src="/javascript/chatterbox.js"></script>
+
+<script type="text/javascript">
+
+  var chatterbox_args = {
+  	'host' : '{{ host_url }}',
+  	'crumb' : '{{ search_crumb|escape }}',
+  	'min_comment_date' : {{ min_comment_date|escape }},
+  };
+
+  window.chatterbox = new info.aaronland.chatterbox.Photos(chatterbox_args);
+	
+</script>
+
+{% ifequal browser.mobile 0 %}
+<br /><br />
+{% endifequal %}
+
+{% ifequal count_comments 0 %}
+<p>Everyone is being very quiet! That's ... weird.</p>
+{% else %}
+{% include "inc_main_contacts.html" %}
+{% endifequal %}
+
+{% include "inc_foot.html" %}
