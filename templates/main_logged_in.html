@@ -9,7 +9,8 @@
 
   var chatterbox_args = {
   	'host' : '{{ host_url }}',
-  	'crumb' : '{{ search_crumb|escape }}',
+  	'search_crumb' : '{{ search_crumb|escape }}',
+  	'contacts_crumb' : '{{ contacts_crumb|escape }}',
   	'min_comment_date' : {{ min_comment_date|escape }},
   };
 
@@ -17,14 +18,25 @@
 	
 </script>
 
+<div id="contacts">
+
 {% ifequal browser.mobile 0 %}
 <br /><br />
 {% endifequal %}
+
+{% if config.chatterbox_deferred_loading %}
+
+{% include "inc_main_contacts_deferred.html" %}
+{% else %}
 
 {% ifequal count_comments 0 %}
 <p>Everyone is being very quiet! That's ... weird.</p>
 {% else %}
 {% include "inc_main_contacts.html" %}
 {% endifequal %}
+
+{% endif %}
+
+</div>
 
 {% include "inc_foot.html" %}

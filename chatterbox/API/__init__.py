@@ -1,5 +1,7 @@
 from APIApp import APIApp
 import chatterbox
+import time
+import md5
 
 class Dispatch (chatterbox.Request, APIApp) :
     
@@ -23,8 +25,11 @@ class Dispatch (chatterbox.Request, APIApp) :
         if format :
             self.format = format
 
+        if method == 'get_contacts' :
+            return self.api_get_contacts()
+
         if method == 'get_comments' :
-            return self.get_comments()
+            return self.api_get_comments()
 
     def ensure_crumb (self, path) :
 
@@ -34,7 +39,35 @@ class Dispatch (chatterbox.Request, APIApp) :
 
         return True
 
-    def get_comments (self) :
+    def api_get_contacts (self) :
+
+        required = ('crumb',)
+
+        if not self.ensure_args(required) :
+            return 
+
+        if not self.ensure_crumb('method=contacts') :
+            return
+
+        refresh = 1800
+        now = int(time.time())
+        
+        dt = now - refresh
+
+        contacts = []
+        
+        try :
+            contacts = self.get_contacts(dt)
+            
+        except Exception, e :
+
+            self.api_error(999, 'Failed to get any comments: %s' % e)
+            return            
+
+        rsp = { 'contacts' : contacts, 'count_contacts' : len(contacts) }
+        return self.api_ok(rsp)
+    
+    def api_get_comments (self) :
 
         required = ('crumb', 'photo_id', 'min_comment_date')
         
@@ -61,3 +94,62 @@ class Dispatch (chatterbox.Request, APIApp) :
             return self.api_error()
 
         return self.api_ok({'comments' : rsp['comments']})        
+
+    def get_contacts (self, dt) :
+
+        method = 'flickr.photos.comments.getRecentForContacts'
+        
+        api_args = {
+            'auth_token' : self.user.token,
+            'date_lastcomment' : dt,
+            'extras' : 'owner_name',
+            }
+        
+        photos = {}
+        
+        owners = []
+        comments = []
+        
+        try :
+            rsp = self.api_call(method, api_args)
+        except Exception, e :
+            raise Exception(e)
+        
+        if not rsp :
+            raise Exception(e)
+        
+        if not rsp['stat'] == 'ok' :
+            raise Exception(rsp['message'])      
+
+        for ph in rsp['photos']['photo'] :
+            
+            nsid = ph['owner']
+            
+            if not nsid in owners :
+                owners.append(nsid)
+                
+            if not photos.has_key(nsid) :
+                icon = self.flickr_get_buddyicon(nsid)
+                
+                hex = md5.new(nsid).hexdigest()
+                short_hex = hex[0:6]
+                
+                owner = {
+                    'username' : ph['ownername'],
+                    'nsid' : nsid,
+                    'nsid_hex' : hex,
+                    'nsid_short_hex' : short_hex,
+                    'buddyicon' : icon,
+                    'photos' : [],
+                    'count' : 0,
+                    }
+                
+                photos[nsid] = owner
+                
+            photos[nsid]['photos'].append(ph)
+            photos[nsid]['count'] += 1
+
+        for nsid in owners :
+            comments.append(photos[nsid])
+      
+        return comments

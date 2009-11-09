@@ -118,11 +118,148 @@ info.aaronland.chatterbox.Photos.prototype.get_comments = function(photo_id, nsi
     var args = {
         'photo_id' : photo_id,
         'min_comment_date' : this.args['min_comment_date'],
-        'crumb' : this.args['crumb'],
+        'crumb' : this.args['search_crumb'],
         'format' : 'json',
     }
 
     this.api.api_call('get_comments', args, doThisOnSuccess, doThisIfNot);
 
     this.current_photo = photo_id;
+};
+
+info.aaronland.chatterbox.Photos.prototype.show_photos = function(nsid){
+
+    if (this.shown){
+
+        $("#desc_" + this.shown).show();
+        $("#photos_" + this.shown).hide();
+
+        if (this.shown == nsid){
+            this.shown = null;
+            return;
+        }
+    }
+
+    $("#desc_" + nsid).hide();
+    $("#photos_" + nsid).show();
+
+    this.shown = nsid
+    return;
+};
+
+info.aaronland.chatterbox.Photos.prototype.get_contacts = function(){
+
+    var _self = this;
+
+    var doThisOnSuccess = function(rsp){
+
+        var count = rsp['contacts'].length;
+
+        var html = '';
+        
+        html += '<div style="margin-left:10%;">';
+
+        for (var i=0; i < count; i++){
+
+            var contact = rsp['contacts'][i];
+            var count_photos = contact['photos'].length;
+
+            html += '<div id="user_' + contact['nsid_hex'] + '" class="photos_hex_">';
+            html += '<div style="float:left;margin-right:40px;margin-bottom:10px;">';
+
+            html += '<a href="#" onclick="window.chatterbox.show_photos(\'' + contact['nsid_hex'] + '\');return false;">';
+            html += '<img id="buddy_' + contact['nsid_hex'] + '" src="' + contact['buddyicon'] + '" height="48" width="48" class="buddy_hex" style="border:3px solid #' + contact['nsid_short_hex'] + '" />';
+            html += '</a>';
+            html += '</div>';
+
+            html += '<div id="desc_' + contact['nsid_hex'] + '" style="float:left;font-size:1.15em;margin-top:15px;">';
+            html += '<span style="border-bottom:none;font-weight:700;">' + contact['username'] + '</span> has <span class="0" id="comments_count_' + contact['nsid_hex'] + '">comments on</span> <span style="font-weight:700;">' + contact['count'] + '</span> photo';
+
+            if (count_photos > 1){
+                html += 's';
+            }
+
+            html += '</div>';
+
+            html += '<div id="photos_' + contact['nsid_hex'] + '" style="display:none;">';
+
+            // thumbs
+
+            if (count_photos > 1){
+
+                html += '<div style="float:left;margin-right:10px;margin-bottom:10px;">';
+
+                for (var j=0; j < count_photos; j++){
+
+                    var ph = contact['photos'][j];
+
+                    html += '<div style="float:left;margin-right:10px;margin-bottom:10px;">';
+                    html += '<a href="#thumb_' + ph['id'] + '">';
+                    html += '<img id="photo_' + ph['id'] + '" src="http://farm' + ph['farm'] + '.static.flickr.com/' + ph['server'] + '/' + ph['id'] + '_' + ph['secret'] + '_s.jpg" height="48" width="48"  style="border:3px solid #' + contact['nsid_short_hex'] + '" /></a>';
+                    html += '</div>';
+                }
+
+                html += '</div>';
+                html += '<br clear="all" />';
+
+            }
+
+            // the actual photos
+
+            for (var j=0; j < count_photos; j++){
+
+                var ph = contact['photos'][j];
+
+                html += '<a name="thumb_' + ph['id'] + '"></a>';
+                html += '<div style="margin-left:95px;">';
+                html += '<div style="float:left;margin-right:10px;margin-bottom:10px;">';
+
+                html += '<a href="http://www.flickr.com/photo.gne?id=' + ph['id'] + '" target="_flickr">';
+                html += '<img id="photo_' + ph['id'] + '" src="http://farm' + ph['farm'] + '.static.flickr.com/' + ph['server'] + '/' + ph['id'] + '_' + ph['secret'] + '_m.jpg"  style="border:3px solid #' + contact['nsid_short_hex'] + '" /></a>';
+                html += '</div>';
+
+                html += '<div id="comments_' + ph['id'] + '" style="margin-left:275px;">loading...</div>';
+                html += '</div>';
+
+                html += '<br clear="all" /><br />';
+      
+            }
+
+            html += '</div>';
+            html += '</div>';
+
+            html += '<br clear="all" />';            
+        }
+
+        html += '</div>';
+        $("#contacts").html(html);
+
+        // the js for loading the comments
+
+        for (var i=0; i < count; i++){
+            var contact = rsp['contacts'][i];
+
+            for (var j=0; j < count_photos; j++){
+
+                var ph = contact['photos'][j];
+
+                var delay = Math.floor(Math.random() * 1000);
+                setTimeout(function(){
+                        window.chatterbox.get_comments(ph['id'],contact['nsid_hex']);
+                    }, delay);
+            }
+        }
+    };
+
+    var doThisIfNot = function (rsp){
+
+        $("#contacts").html("Blargh! Something went wrong: <em>" + rsp['error']['message'] + "</em>");
+    };
+
+    var args = {
+        'crumb' : this.args['contacts_crumb'],
+        'format' : 'json',
+    }
+
+    this.api.api_call('get_contacts', args, doThisOnSuccess, doThisIfNot);
 };
