@@ -232,28 +232,46 @@ info.aaronland.chatterbox.Photos.prototype.get_contacts = function(){
         }
 
         html += '</div>';
-        $("#contacts").html(html);
 
         // the js for loading the comments
 
+        html += '<script type="text/javascript">';
+
         for (var i=0; i < count; i++){
+
             var contact = rsp['contacts'][i];
+            var count_photos = contact['photos'].length;
 
             for (var j=0; j < count_photos; j++){
 
-                var ph = contact['photos'][j];
-
                 var delay = Math.floor(Math.random() * 1000);
-                setTimeout(function(){
-                        window.chatterbox.get_comments(ph['id'],contact['nsid_hex']);
-                    }, delay);
+
+                var id = contact['photos'][j]['id'];
+                var hex = contact['nsid_hex'];
+                
+                html += 'setTimeout(function(){';
+                html += 'window.chatterbox.get_comments(\'' + id + '\', \'' + hex + '\') }';
+                html += ', ' + delay + ');';
+
+                // console.log(contact['username'] + ': ' + id + ' / ' + count_photos);
             }
         }
+
+        html += '</script>';
+
+        $("#contacts").html(html);
     };
 
     var doThisIfNot = function (rsp){
 
-        $("#contacts").html("Blargh! Something went wrong: <em>" + rsp['error']['message'] + "</em>");
+        var html = '';
+
+        html += '<div class="error">';
+        html += 'Blargh! Something went wrong: <em>' + rsp['error']['message'] + '</em>';
+        html += '</div>';
+        html += '<span style="font-size:small;"><a href="/">Try again?</a></span>';
+
+        $("#contacts").html(html);
     };
 
     var args = {

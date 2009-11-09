@@ -152,8 +152,17 @@ h3 {
 }
 
 .error { 
-         font-weight:700;
+         font-size:1.25em;
          color:red;
+         line-height:25px;
+         margin-top:25px;
+         margin-bottom:25px;
+}
+
+.fetching { 
+            color:#ccc;
+            font-size:2em;
+            margin-top:25px;
 }
 
 .buddy_hex { 

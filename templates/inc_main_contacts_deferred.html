@@ -1,7 +1,7 @@
 <script type="text/javascript">
 
-  $("#contacts").html("Fetching your contacts...");
-
+  $("#contacts").html('<div class="fetching">Fetching your contacts...</dov>');
+  
   setTimeout(function(){
   	window.chatterbox.get_contacts();
   }, 100);
