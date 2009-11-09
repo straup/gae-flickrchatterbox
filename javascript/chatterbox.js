@@ -155,7 +155,12 @@ info.aaronland.chatterbox.Photos.prototype.get_contacts = function(){
 
         $("#contacts").html('');
 
-        var count = rsp['contacts'].length;
+        var count = parseInt(rsp['contacts'].length);
+
+        if (! count){
+            $("#contacts").html("<p>Everyone is being very quiet! That's ... weird.</p>");
+            return;
+        }
 
         var html = '';
         
