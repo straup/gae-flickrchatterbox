@@ -153,12 +153,12 @@ info.aaronland.chatterbox.Photos.prototype.get_contacts = function(){
 
     var doThisOnSuccess = function(rsp){
 
+        $("#contacts").html('');
+
         var count = rsp['contacts'].length;
 
         var html = '';
         
-        html += '<div style="margin-left:10%;">';
-
         for (var i=0; i < count; i++){
 
             var contact = rsp['contacts'][i];
@@ -233,8 +233,11 @@ info.aaronland.chatterbox.Photos.prototype.get_contacts = function(){
 
         html += '</div>';
 
+        $("#contacts").append(html);
+
         // the js for loading the comments
 
+        var html = '';
         html += '<script type="text/javascript">';
 
         for (var i=0; i < count; i++){
@@ -259,7 +262,7 @@ info.aaronland.chatterbox.Photos.prototype.get_contacts = function(){
 
         html += '</script>';
 
-        $("#contacts").html(html);
+        $("#contacts").append(html);
     };
 
     var doThisIfNot = function (rsp){
