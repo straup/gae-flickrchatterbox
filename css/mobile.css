@@ -1,6 +1,43 @@
+.foo{
+
+}
+
+.photo{
+
+}
+
+.comments{
+    font-size:small;
+}
+
+.comment{
+    font-size:small;
+    color:#000;
+    list-style-type:none;
+    padding-top:20px;
+    max-width:240px;
+}
+
+.comment_body{
+}
+
+.comment_author{
+    font-size:small;
+    text-align:right;
+    margin-top:10px;
+}
+
+.desc {
+    font-size:small;
+}
+
+#thumbs{
+    display:none;
+}
+
 /* elements */
 
-body { 
+body {
        font-family:sans-serif;
        font-size:11pt;
        color:darkslategrey;
@@ -8,11 +45,11 @@ body {
        margin-left:0;
        margin-right:0;
        margin-bottom:60px;
-       background-image: url('/images/bluetile.gif');
-       //max-width:340px;
+       background-image: url('/images/j.gif');
+       // max-width:340px;
 }
 
-h2 { 
+h2 {
      color:#ff0084;
 }
 
@@ -36,7 +73,7 @@ h3 {
 
 #getstarted { 
               font-size:1.5em;
-              text-align:center;
+              // text-align:center;
 }
 
 #getstarted a { 
@@ -120,12 +157,16 @@ h3 {
                    font-size:large;
 }
 
-#whoami { 
+#whoami {
           float:right;
-          font-size:small;
+          font-size:11px;
           margin-left:20px;
           margin-bottom:25px;
           margin-right:20px;
+	  background-color:beige;
+	  opacity:.85;
+	  padding-left:25px;
+	  padding:12px;
 }
 
 /* classes */

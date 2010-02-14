@@ -28,26 +28,6 @@ info.aaronland.chatterbox.Photos = function(args){
 
 // do the thing to inherit from info.aaronland.flickrapp.API here (see below) ...
 
-info.aaronland.chatterbox.Photos.prototype.show_photos = function(nsid){
-
-    if (this.shown){
-
-        $("#desc_" + this.shown).show();
-        $("#photos_" + this.shown).hide();
-
-        if (this.shown == nsid){
-            this.shown = null;
-            return;
-        }
-    }
-
-    $("#desc_" + nsid).hide();
-    $("#photos_" + nsid).show();
-
-    this.shown = nsid
-    return;
-};
-
 info.aaronland.chatterbox.Photos.prototype.get_comments = function(photo_id, nsid_hex){
 
     if (this.comments_cache[ photo_id ]){
@@ -64,20 +44,20 @@ info.aaronland.chatterbox.Photos.prototype.get_comments = function(photo_id, nsi
         var html = '';
 
         var count = rsp['comments']['comment'].length;
-    
+
         html += '<ul style="margin:0px;padding:0px;margin-bottom:20px;">';
-        
+
         for (var i=0; i < count; i++){
-        
+
             var c = rsp['comments']['comment'][i];
-            
-            html += '<li style="font-family:serif;font-size:1.2em;color:#000;list-style-type:none;line-height:24px;background-color:#fff;padding:10px;padding-left:20px;padding-right:20px;padding-top:none;">';
-            
-            html += '<div><q>' + c['_content'] + '</q></div>';
-            html += '<div style="font-size:small;text-align:right;margin-right:25px;margin-top:5px;">&#8212; <a href="' + c['permalink'] + '">' + c['authorname'] + '</a></div>';
+
+            html += '<li class="comment">';
+
+            html += '<div class="comment_body"><q>' + c['_content'] + '</q></div>';
+            html += '<div class="comment_author">&#8212; <a href="' + c['permalink'] + '">' + c['authorname'] + '</a></div>';
             html += '</li>';
         }
-        
+
         html += '</ul>';
 
         $("#comments_" + photo_id).html(html);
@@ -140,7 +120,10 @@ info.aaronland.chatterbox.Photos.prototype.show_photos = function(nsid){
         }
     }
 
-    $("#desc_" + nsid).hide();
+    if (! this.args['is_mobile']){
+	$("#desc_" + nsid).hide();
+    }
+
     $("#photos_" + nsid).show();
 
     this.shown = nsid
@@ -163,7 +146,7 @@ info.aaronland.chatterbox.Photos.prototype.get_contacts = function(){
         }
 
         var html = '';
-        
+
         for (var i=0; i < count; i++){
 
             var contact = rsp['contacts'][i];
@@ -177,7 +160,7 @@ info.aaronland.chatterbox.Photos.prototype.get_contacts = function(){
             html += '</a>';
             html += '</div>';
 
-            html += '<div id="desc_' + contact['nsid_hex'] + '" style="float:left;font-size:1.15em;margin-top:15px;">';
+            html += '<div id="desc_' + contact['nsid_hex'] + '" class="desc">';
             html += '<span style="border-bottom:none;font-weight:700;">' + contact['username'] + '</span> has <span class="0" id="comments_count_' + contact['nsid_hex'] + '">comments on</span> <span style="font-weight:700;">' + contact['count'] + '</span> photo';
 
             if (count_photos > 1){
@@ -190,9 +173,9 @@ info.aaronland.chatterbox.Photos.prototype.get_contacts = function(){
 
             // thumbs
 
-            if (count_photos > 1){
+            if ((count_photos > 1) && (! _self.args['is_mobile'])){
 
-                html += '<div style="float:left;margin-right:10px;margin-bottom:10px;">';
+                html += '<div id="thumbs">';
 
                 for (var j=0; j < count_photos; j++){
 
@@ -216,24 +199,24 @@ info.aaronland.chatterbox.Photos.prototype.get_contacts = function(){
                 var ph = contact['photos'][j];
 
                 html += '<a name="thumb_' + ph['id'] + '"></a>';
-                html += '<div style="margin-left:95px;">';
-                html += '<div style="float:left;margin-right:10px;margin-bottom:10px;">';
+                html += '<div class="foo">';
+                html += '<div class="photo">';
 
                 html += '<a href="http://www.flickr.com/photo.gne?id=' + ph['id'] + '" target="_flickr">';
                 html += '<img id="photo_' + ph['id'] + '" src="http://farm' + ph['farm'] + '.static.flickr.com/' + ph['server'] + '/' + ph['id'] + '_' + ph['secret'] + '_m.jpg"  style="border:3px solid #' + contact['nsid_short_hex'] + '" /></a>';
                 html += '</div>';
 
-                html += '<div id="comments_' + ph['id'] + '" style="margin-left:275px;">loading...</div>';
+                html += '<div id="comments_' + ph['id'] + '" class="comments">loading...</div>';
                 html += '</div>';
 
                 html += '<br clear="all" /><br />';
-      
+
             }
 
             html += '</div>';
             html += '</div>';
 
-            html += '<br clear="all" />';            
+            html += '<br clear="all" />';
         }
 
         html += '</div>';
@@ -256,12 +239,11 @@ info.aaronland.chatterbox.Photos.prototype.get_contacts = function(){
 
                 var id = contact['photos'][j]['id'];
                 var hex = contact['nsid_hex'];
-                
+
                 html += 'setTimeout(function(){';
                 html += 'window.chatterbox.get_comments(\'' + id + '\', \'' + hex + '\') }';
                 html += ', ' + delay + ');';
 
-                // console.log(contact['username'] + ': ' + id + ' / ' + count_photos);
             }
         }
 

@@ -1,6 +1,54 @@
+.foo{
+    margin-left:95px;
+}
+
+.photo{
+    float:left;margin-right:10px;margin-bottom:10px;
+}
+
+.comments{
+    margin-left:275px;
+}
+
+.comment{
+    font-family:serif;
+    font-size:1.2em;
+    color:#000;
+    list-style-type:none;
+    line-height:24px;
+    background-color:#fff;
+    padding:10px;
+    padding-left:20px;
+    padding-right:20px;
+    padding-top:none;
+}
+
+.comment_body{
+
+}
+
+.comment_author{
+    font-size:small;
+    text-align:right;
+    margin-right:25px;
+    margin-top:5px;
+}
+
+.desc {
+    float:left;
+    font-size:1.15em;
+    margin-top:15px;
+}
+
+#thumbs{
+    float:left;
+    margin-right:10px;
+    margin-bottom:10px;
+}
+
 /* elements */
 
-body { 
+body {
        font-family:sans-serif;
        font-size:11pt;
        color:darkslategrey;
