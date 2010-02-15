@@ -152,7 +152,7 @@ info.aaronland.chatterbox.Photos.prototype.get_contacts = function(){
             var contact = rsp['contacts'][i];
             var count_photos = contact['photos'].length;
 
-            html += '<div id="user_' + contact['nsid_hex'] + '" class="photos_hex_">';
+            html += '<div id="user_' + contact['nsid_hex'] + '" class="photos_hex">';
             html += '<div style="float:left;margin-right:40px;margin-bottom:10px;">';
 
             html += '<a href="#" onclick="window.chatterbox.show_photos(\'' + contact['nsid_hex'] + '\');return false;">';
